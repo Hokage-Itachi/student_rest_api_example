@@ -1,13 +1,13 @@
 package com.example.demo.model;
 
+import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.List;
 
 @Setter
 @Getter
@@ -15,27 +15,26 @@ import javax.persistence.Id;
 @AllArgsConstructor
 @Entity
 public class Student {
-    private @Id
+    @Id
     @GeneratedValue
-    Integer id;
+    @NotNull
+    private Integer id;
+
+    @NotNull
     private String name;
+
+    @NotNull
     private String phoneNumber;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
+    @ManyToMany
+    @JoinTable(name = "student_course",
+            joinColumns = @JoinColumn(name = "student_id"),
+            inverseJoinColumns = @JoinColumn(name = "course_id"))
+    private List<Course> joinedCourse;
 
-        if (!(o instanceof Student)) {
-            return false;
-        }
-
-        Student student = (Student) o;
-
-        return this.id.equals(student.id);
-
-    }
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @Override
     public String toString() {
