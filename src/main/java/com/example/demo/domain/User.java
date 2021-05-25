@@ -1,4 +1,4 @@
-package com.example.demo.model;
+package com.example.demo.domain;
 
 import com.sun.istack.NotNull;
 import lombok.*;

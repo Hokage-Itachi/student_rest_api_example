@@ -1,9 +1,8 @@
-package com.example.demo.model;
+package com.example.demo.domain;
 
 import com.sun.istack.NotNull;
 import lombok.Getter;
 import lombok.Setter;
-import com.example.demo.model.User;
 
 import javax.persistence.*;
 import java.util.List;

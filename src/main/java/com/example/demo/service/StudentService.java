@@ -1,7 +1,7 @@
 package com.example.demo.service;
 
-import com.example.demo.model.Student;
-import com.example.demo.repository.IStudentRepository;
+import com.example.demo.domain.Student;
+import com.example.demo.repository.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,21 +12,21 @@ import java.util.Optional;
 public class StudentService {
 
     @Autowired
-    private IStudentRepository iStudentRepository;
+    private StudentRepository studentRepository;
 
     public List<Student> findAll() {
-        return iStudentRepository.findAll();
+        return studentRepository.findAll();
     }
 
     public Optional<Student> findById(Integer id) {
-        return iStudentRepository.findById(id);
+        return studentRepository.findById(id);
     }
 
     public Student save(Student student) {
-        return iStudentRepository.save(student);
+        return studentRepository.save(student);
     }
 
     public void remove(Integer id) {
-        iStudentRepository.deleteById(id);
+        studentRepository.deleteById(id);
     }
 }
