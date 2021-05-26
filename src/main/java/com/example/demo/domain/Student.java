@@ -32,16 +32,5 @@ public class Student {
             inverseJoinColumns = @JoinColumn(name = "course_id"))
     private List<Course> joinedCourse;
 
-    @OneToOne
-    @JoinColumn(name = "user_id")
-    private User user;
 
-    @Override
-    public String toString() {
-        return "Student{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", phoneNumber='" + phoneNumber + '\'' +
-                '}';
-    }
 }

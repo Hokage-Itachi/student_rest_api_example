@@ -25,9 +25,5 @@ public class Teacher {
     @OneToMany(mappedBy = "teacher")
     private List<Course> courses;
 
-    @OneToOne
-    @JoinColumn(name = "user_id")
-    private User user;
-
 
 }
