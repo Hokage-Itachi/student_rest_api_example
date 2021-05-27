@@ -1,41 +1,71 @@
 package com.example.demo.controller;
 
 
+import com.example.demo.coverter.StudentConverter;
+import com.example.demo.coverter.UserConverter;
+import com.example.demo.domain.Course;
+import com.example.demo.domain.Role;
 import com.example.demo.domain.Student;
+import com.example.demo.domain.User;
+import com.example.demo.dto.CourseDto;
+import com.example.demo.dto.StudentDto;
+import com.example.demo.response.Response;
 import com.example.demo.service.StudentService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/students")
+@RequestMapping("api")
 public class StudentController {
-    @Autowired
-    private StudentService studentService;
+
+    private final StudentService studentService;
+    private final StudentConverter studentConverter;
+
+
+    public StudentController(StudentService studentService, StudentConverter studentConverter) {
+        this.studentService = studentService;
+        this.studentConverter = studentConverter;
+    }
 
     @GetMapping
-    public ResponseEntity<List<Student>> getAllStudent() {
-        return new ResponseEntity<>(studentService.findAll(), HttpStatus.OK);
+    public ResponseEntity<Object> getAllStudent() {
+        List<Student> students = studentService.findAll();
+        List<StudentDto> studentDtoList = students.stream().map(this.studentConverter::toDto).collect(Collectors.toList());
+        return new ResponseEntity<>(studentDtoList, HttpStatus.OK);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Student> getStudentById(@PathVariable("id") Integer id) {
-        Optional<Student> optionalStudent = studentService.findById(id);
+    @GetMapping("/courses/{courseId}/students/{studentId}")
+    public ResponseEntity<Object> getStudentById(@PathVariable("courseId") Integer courseId, @PathVariable("studentId") Integer studentId) {
+        Optional<Student> optionalStudent = studentService.findById(studentId);
         if (optionalStudent.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            Response response = new Response();
+            response.setMessage("Student " + String.valueOf(studentId) + " not found");
+            response.setStatus("404");
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
-
-        return new ResponseEntity<>(optionalStudent.get(), HttpStatus.OK);
+        StudentDto studentDto = studentConverter.toDto(optionalStudent.get());
+        System.out.println(studentDto);
+        return new ResponseEntity<>(studentDto, HttpStatus.OK);
     }
 
-    @PostMapping
-    public ResponseEntity<Student> createNewStudent(@RequestBody Student student) {
-        return new ResponseEntity<>(studentService.save(student), HttpStatus.CREATED);
+    @PostMapping("/courses/{courseId}/students")
+    public ResponseEntity<Object> createNewStudent(@PathVariable("courseId") Integer courseId, @RequestBody StudentDto studentDto) {
+        Response response = new Response();
+        Course course = new Course(courseId, "", null, null);
+        Student student = this.studentConverter.toEntity(studentDto);
+        List<Course> joinedCourses = new ArrayList<>();
+        joinedCourses.add(course);
+        student.setJoinedCourse(joinedCourses);
+        this.studentService.save(student);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
@@ -64,5 +94,21 @@ public class StudentController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @GetMapping("/test")
+    public ResponseEntity<Object> test() {
+        User userDto = new User();
+        Role roleDto = new Role(1, "student");
+
+        userDto.setId(1);
+        userDto.setUsername("BAn");
+        userDto.setPassword("123");
+        userDto.setRole(roleDto);
+
+        UserConverter userConverter = new UserConverter();
+
+
+        return new ResponseEntity<>(userConverter.toUserDto(userDto), HttpStatus.OK);
+
+    }
 
 }

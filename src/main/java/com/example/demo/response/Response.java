@@ -13,6 +13,6 @@ import java.util.List;
 @AllArgsConstructor
 public class Response {
     private String message;
-    private Integer status;
+    private String status;
     private List<Object> data;
 }

@@ -18,5 +18,5 @@ public class StudentDto {
     private String name;
     private String phoneNumber;
     private List<Course> joinedCourses;
-    private UserDto user;
+
 }
